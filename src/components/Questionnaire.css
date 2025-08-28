@@ -1,0 +1,89 @@
+
+.questionnaire-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.question-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.question-group.skills {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.questionnaire-form h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  border-bottom: 2px solid #60a5fa;
+  padding-bottom: 0.5rem;
+  color: #111827;
+}
+
+.questionnaire-form p {
+    margin: 0;
+    color: #4b5563;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 1.2em;
+  height: 1.2em;
+  accent-color: #3b82f6;
+}
+
+.checkbox-container label {
+  font-size: 1rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.skill-tag label {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.skill-tag input[type="checkbox"]:checked + label {
+    background-color: #3b82f6;
+    color: white;
+}
+
+/* Hide the actual checkbox for skill tags */
+.skill-tag input[type="checkbox"] {
+    display: none;
+}
+
+.submit-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: center;
+}
+
+.submit-btn:hover {
+  background-color: #2563eb;
+}
