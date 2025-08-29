@@ -30,41 +30,74 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
   const skillQuestions = questions.filter(q => q.category === 'skill');
 
   return (
-    <form onSubmit={handleSubmit} className="questionnaire-form">
-      <h2>Minat & Preferensi</h2>
-      <p>Pilih semua yang sesuai dengan minat Anda.</p>
-      <div className="question-group">
-        {interestQuestions.map(question => (
-          <div key={question.id} className="checkbox-container">
-            <input
-              type="checkbox"
-              id={question.id}
-              checked={selectedAnswers.has(question.id)}
-              onChange={() => handleCheckboxChange(question.id)}
-            />
-            <label htmlFor={question.id}>{question.text}</label>
-          </div>
-        ))}
-      </div>
+    <div className="questionnaire-container">
+      <h1 className="questionnaire-title">Temukan Karir IT Impian Anda</h1>
+      <p className="questionnaire-description">Jawab pertanyaan berikut untuk mendapatkan rekomendasi karir yang paling sesuai dengan profil Anda</p>
 
-      <h2>Keterampilan & Teknologi</h2>
-      <p>Pilih teknologi atau keahlian yang sudah Anda miliki atau ingin pelajari.</p>
-      <div className="question-group skills">
-        {skillQuestions.map(question => (
-          <div key={question.id} className="checkbox-container skill-tag">
-            <input
-              type="checkbox"
-              id={question.id}
-              checked={selectedAnswers.has(question.id)}
-              onChange={() => handleCheckboxChange(question.id)}
-            />
-            <label htmlFor={question.id}>{question.text}</label>
+      <form onSubmit={handleSubmit}>
+        <div className="section">
+          <h2 className="section-title">Minat & Preferensi</h2>
+          <p className="section-description">Pilih semua area yang menarik minat Anda di bidang teknologi</p>
+          <div className="question-group">
+            {interestQuestions.map(question => (
+              <div 
+                key={question.id} 
+                className={`checkbox-container ${selectedAnswers.has(question.id) ? 'checked' : ''}`}
+                onClick={() => handleCheckboxChange(question.id)}
+              >
+                <input
+                  type="checkbox"
+                  id={question.id}
+                  checked={selectedAnswers.has(question.id)}
+                  onChange={() => {}}
+                  readOnly
+                />
+                <label 
+                  htmlFor={question.id} 
+                  className="checkbox-label"
+                >
+                  {question.text}
+                </label>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
 
-      <button type="submit" className="submit-btn">Dapatkan Rekomendasi</button>
-    </form>
+        <div className="section">
+          <h2 className="section-title">Keterampilan & Teknologi</h2>
+          <p className="section-description">Pilih teknologi atau keahlian yang sudah Anda miliki atau tertarik untuk dipelajari</p>
+          <div className="question-group skills">
+            {skillQuestions.map(question => (
+              <div 
+                key={question.id} 
+                className={`skill-tag ${selectedAnswers.has(question.id) ? 'checked' : ''}`}
+                onClick={() => handleCheckboxChange(question.id)}
+              >
+                <input
+                  type="checkbox"
+                  id={question.id}
+                  checked={selectedAnswers.has(question.id)}
+                  onChange={() => {}}
+                  readOnly
+                />
+                <label 
+                  htmlFor={question.id} 
+                  className="checkbox-label"
+                >
+                  {question.text}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="submit-section">
+          <button type="submit" className="submit-button">
+            Dapatkan Rekomendasi Karir
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

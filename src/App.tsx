@@ -4,6 +4,10 @@ import { CAREER_PATHS, QUESTIONS, RULES } from './data/knowledgeBase';
 import Questionnaire from './components/Questionnaire';
 import Results from './components/Results';
 import Home from './components/Home';
+import About from './components/About';
+import Services from './components/Services';
+import SuccessStories from './components/SuccessStories';
+import Blog from './components/Blog';
 
 // Definisikan tipe untuk hasil rekomendasi agar lebih kuat
 interface Recommendation {
@@ -13,7 +17,7 @@ interface Recommendation {
   score: number;
 }
 
-type View = 'home' | 'questionnaire' | 'results';
+type View = 'home' | 'questionnaire' | 'results' | 'about' | 'services' | 'success-stories' | 'blog';
 
 function App() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
@@ -54,12 +58,28 @@ function App() {
     setRecommendations([]);
   };
 
+  const handleNavigation = (view: View) => {
+    setCurrentView(view);
+  };
+
+  const handleBackToHome = () => {
+    setCurrentView('home');
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'questionnaire':
         return <Questionnaire questions={QUESTIONS} onSubmit={handleGetRecommendations} />;
       case 'results':
         return <Results sortedCareers={recommendations} onReset={handleReset} />;
+      case 'about':
+        return <About onBack={handleBackToHome} />;
+      case 'services':
+        return <Services onBack={handleBackToHome} />;
+      case 'success-stories':
+        return <SuccessStories onBack={handleBackToHome} />;
+      case 'blog':
+        return <Blog onBack={handleBackToHome} />;
       case 'home':
       default:
         return <Home onStart={() => setCurrentView('questionnaire')} />;
@@ -68,15 +88,55 @@ function App() {
 
   return (
     <div className="container">
-      <header>
-        <h1>Sistem Pakar Rekomendasi Karir IT</h1>
+      <header className="modern-header">
+        <div className="header-content">
+          <div className="logo">
+            <span className="logo-icon">🚀</span>
+            <span className="logo-text">CareerGuide</span>
+          </div>
+          <nav className="nav-menu">
+            <button 
+              onClick={() => handleNavigation('home')} 
+              className={`nav-link ${currentView === 'home' ? 'active' : ''}`}
+            >
+              Beranda
+            </button>
+            <button 
+              onClick={() => handleNavigation('about')} 
+              className={`nav-link ${currentView === 'about' ? 'active' : ''}`}
+            >
+              Tentang
+            </button>
+            <button 
+              onClick={() => handleNavigation('services')} 
+              className={`nav-link ${currentView === 'services' ? 'active' : ''}`}
+            >
+              Layanan
+            </button>
+            <button 
+              onClick={() => handleNavigation('success-stories')} 
+              className={`nav-link ${currentView === 'success-stories' ? 'active' : ''}`}
+            >
+              Kisah Sukses
+            </button>
+            <button 
+              onClick={() => handleNavigation('blog')} 
+              className={`nav-link ${currentView === 'blog' ? 'active' : ''}`}
+            >
+              Blog
+            </button>
+          </nav>
+          <button 
+            onClick={() => setCurrentView('questionnaire')} 
+            className="cta-button"
+          >
+            Konsultasi Gratis
+          </button>
+        </div>
       </header>
       <main>
         {renderContent()}
       </main>
-      <footer>
-        <p>Dibangun dengan React, TypeScript, dan Vite.</p>
-      </footer>
     </div>
   );
 }
