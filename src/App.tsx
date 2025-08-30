@@ -91,8 +91,14 @@ function App() {
       <header className="modern-header">
         <div className="header-content">
           <div className="logo">
-            <span className="logo-icon">🚀</span>
-            <span className="logo-text">CareerGuide</span>
+            <svg className="logo-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="14" fill="#07553B" stroke="#CED46A" strokeWidth="2"/>
+              <path d="M12 10h8v2h-8v-2zm0 4h8v2h-8v-2zm0 4h6v2h-6v-2z" fill="#CED46A"/>
+              <circle cx="9" cy="11" r="1" fill="#CED46A"/>
+              <circle cx="9" cy="15" r="1" fill="#CED46A"/>
+              <circle cx="9" cy="19" r="1" fill="#CED46A"/>
+            </svg>
+            <span className="logo-text">TalentPath</span>
           </div>
           <nav className="nav-menu">
             <button 

@@ -52,7 +52,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
           <div className="hero-right">
             <div className="hero-image-container">
               <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop&crop=face" 
+                src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&h=400&fit=crop" 
                 alt="Professional consultant" 
                 className="hero-image"
               />
@@ -291,8 +291,14 @@ const Home: React.FC<Props> = ({ onStart }) => {
           <div className="footer-content">
             <div className="footer-left">
               <div className="footer-logo">
-                <span className="logo-icon">🚀</span>
-                <span className="logo-text">CareerGuide</span>
+                <svg className="logo-icon" width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="16" cy="16" r="14" fill="#07553B" stroke="#CED46A" strokeWidth="2"/>
+                  <path d="M12 10h8v2h-8v-2zm0 4h8v2h-8v-2zm0 4h6v2h-6v-2z" fill="#CED46A"/>
+                  <circle cx="9" cy="11" r="1" fill="#CED46A"/>
+                  <circle cx="9" cy="15" r="1" fill="#CED46A"/>
+                  <circle cx="9" cy="19" r="1" fill="#CED46A"/>
+                </svg>
+                <span className="logo-text">TalentPath</span>
               </div>
               <p className="footer-description">
                 Platform rekomendasi karir berbasis AI yang membantu profesional menemukan jalur karir yang tepat sesuai dengan minat, keahlian, dan potensi mereka.
@@ -300,7 +306,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
               <div className="footer-contact">
                 <div className="contact-item">
                   <span className="contact-icon">📧</span>
-                  <span>info@careerguide.com</span>
+                  <span>info@talentpath.com</span>
                 </div>
                 <div className="contact-item">
                   <span className="contact-icon">📞</span>
@@ -324,7 +330,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
           </div>
           <div className="footer-bottom">
             <div className="footer-copyright">
-              <p>&copy; 2025 CareerGuide. All rights reserved.</p>
+              <p>&copy; 2025 TalentPath. All rights reserved.</p>
             </div>
             <div className="footer-social">
               <a href="#" className="social-link" title="LinkedIn">
