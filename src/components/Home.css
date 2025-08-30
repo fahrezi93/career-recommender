@@ -2,6 +2,7 @@
   width: 100%;
   min-height: 100vh;
   background: #ffffff;
+  animation: fadeIn 1s ease-out;
 }
 
 /* Hero Section */
@@ -34,6 +35,7 @@
   font-weight: 600;
   font-size: 0.75rem;
   margin-bottom: 1.5rem;
+  animation: fadeIn 1s ease-out 0.2s both;
 }
 
 .badge-icon {
@@ -46,6 +48,7 @@
   line-height: 1.1;
   color: var(--light-text);
   margin-bottom: 1.25rem;
+  animation: fadeIn 1s ease-out 0.4s both;
 }
 
 .highlight {
@@ -61,6 +64,7 @@
   color: rgba(31, 41, 55, 0.7);
   margin-bottom: 2rem;
   max-width: 480px;
+  animation: fadeIn 1s ease-out 0.6s both;
 }
 
 .hero-cta-button {
@@ -77,6 +81,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(7, 85, 59, 0.3);
+  animation: fadeIn 1s ease-out 0.8s both;
 }
 
 .hero-cta-button:hover {
@@ -95,12 +100,18 @@
   transform: translateX(4px);
 }
 
+/* Hero Left Side */
+.hero-left {
+  animation: slideInFromLeft 1.2s ease-out;
+}
+
 /* Hero Right Side */
 .hero-right {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: slideInFromRight 1.2s ease-out;
 }
 
 .hero-image-container {
@@ -115,6 +126,7 @@
   object-fit: cover;
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: scaleIn 1.5s ease-out 0.3s both;
 }
 
 .floating-stats {
@@ -129,9 +141,9 @@
 .stat-card {
   position: absolute;
   background: rgba(255, 255, 255, 0.2);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   pointer-events: auto;
@@ -140,32 +152,36 @@
 .stat-card:nth-child(1) {
   top: 10%;
   right: -10%;
+  animation: bounceIn 0.8s ease-out 0.8s both;
 }
 
 .stat-card:nth-child(2) {
   top: 35%;
   left: -15%;
+  animation: bounceIn 0.8s ease-out 1.0s both;
 }
 
 .stat-card:nth-child(3) {
   bottom: 35%;
   right: -5%;
+  animation: bounceIn 0.8s ease-out 1.2s both;
 }
 
 .stat-card:nth-child(4) {
   bottom: 10%;
   left: -10%;
+  animation: bounceIn 0.8s ease-out 1.4s both;
 }
 
 .stat-number {
-  font-size: 1.1rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--primary-green);
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.15rem;
 }
 
 .stat-label {
-  font-size: 0.7rem;
+  font-size: 0.5rem;
   color: rgba(31, 41, 55, 0.8);
   font-weight: 500;
 }
@@ -175,6 +191,7 @@
   background: #f8fafc;
   padding: 5rem 0;
   color: #1f2937;
+  animation: fadeIn 1s ease-out;
 }
 
 .partners-container {
@@ -214,6 +231,7 @@
   min-height: 80px;
   width: 100%;
   max-width: 180px;
+  animation: scaleIn 0.6s ease-out;
 }
 
 .partner-logo:hover {
@@ -344,6 +362,7 @@
   padding: 2rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.8s ease-out;
 }
 
 .service-card:hover {
@@ -576,6 +595,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   position: relative;
   transition: all 0.3s ease;
+  animation: slideInFromLeft 0.8s ease-out;
 }
 
 .testimonial-card:hover {
@@ -586,7 +606,7 @@
 .testimonial-quote {
   font-size: 4rem;
   color: var(--accent-olive);
-  font-family: serif;
+  font-family: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
   position: absolute;
   top: 1rem;
   left: 2rem;

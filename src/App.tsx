@@ -126,12 +126,6 @@ function App() {
               Blog
             </button>
           </nav>
-          <button 
-            onClick={() => setCurrentView('questionnaire')} 
-            className="cta-button"
-          >
-            Konsultasi Gratis
-          </button>
         </div>
       </header>
       <main>

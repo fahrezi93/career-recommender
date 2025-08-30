@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Home.css';
 
 interface Props {
@@ -6,6 +6,27 @@ interface Props {
 }
 
 const Home: React.FC<Props> = ({ onStart }) => {
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections that should animate on scroll
+    const animateElements = document.querySelectorAll('.scroll-animate');
+    animateElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="home-container">
       {/* Hero Section */}
@@ -59,7 +80,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
       </section>
 
       {/* Partners Section */}
-      <section className="partners-section">
+      <section className="partners-section scroll-animate">
         <div className="partners-container">
           <h3 className="partners-title">Dipercaya oleh Perusahaan Terkemuka</h3>
           <div className="partners-grid">
@@ -98,7 +119,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
       </section>
 
       {/* About Section */}
-      <section className="about-section">
+      <section className="about-section scroll-animate">
         <div className="about-container">
           <div className="about-left">
             <div className="about-badge">
@@ -146,7 +167,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
       </section>
 
       {/* Services Section */}
-      <section className="services-section">
+      <section className="services-section scroll-animate">
         <div className="services-container">
           <div className="services-header">
             <div className="services-label">Layanan Kami</div>
@@ -182,7 +203,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
       </section>
 
       {/* Blog Section */}
-      <section className="blog-section">
+      <section className="blog-section scroll-animate">
         <div className="blog-container">
           <div className="blog-header">
             <div className="blog-label">Blog Kami</div>
@@ -219,7 +240,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="testimonials-section">
+      <section className="testimonials-section scroll-animate">
         <div className="testimonials-container">
           <div className="testimonials-header">
             <div className="testimonials-label">Testimoni</div>

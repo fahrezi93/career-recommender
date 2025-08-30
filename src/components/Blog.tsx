@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Blog.css';
 
 interface Props {
@@ -6,6 +6,26 @@ interface Props {
 }
 
 const Blog: React.FC<Props> = ({ onBack }) => {
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    const animateElements = document.querySelectorAll('.scroll-animate');
+    animateElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="blog-page">
       {/* Hero Section */}
@@ -17,7 +37,7 @@ const Blog: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Featured Article */}
-      <section className="featured-article-section">
+      <section className="featured-article-section scroll-animate">
         <div className="featured-article-container">
           <div className="featured-article">
             <div className="article-image">
@@ -48,7 +68,7 @@ const Blog: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Articles Grid */}
-      <section className="articles-section">
+      <section className="articles-section scroll-animate">
         <div className="articles-container">
           <div className="section-header">
             <h2>Artikel Terbaru</h2>
@@ -208,7 +228,7 @@ const Blog: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Newsletter Section */}
-      <section className="newsletter-section">
+      <section className="newsletter-section scroll-animate">
         <div className="newsletter-container">
           <div className="newsletter-content">
             <h2>Dapatkan Tips Karir Terbaru</h2>
@@ -227,7 +247,7 @@ const Blog: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="blog-cta-section">
+      <section className="blog-cta-section scroll-animate">
         <div className="blog-cta-container">
           <h2>Siap Mengembangkan Karir Anda?</h2>
           <p>Jangan hanya baca artikel, mulai action plan untuk karir impian Anda</p>

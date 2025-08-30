@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Services.css';
 
 interface Props {
@@ -6,6 +6,26 @@ interface Props {
 }
 
 const Services: React.FC<Props> = ({ onBack }) => {
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    const animateElements = document.querySelectorAll('.scroll-animate');
+    animateElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="services-page">
       {/* Hero Section */}
@@ -17,7 +37,7 @@ const Services: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Main Services */}
-      <section className="main-services-section">
+      <section className="main-services-section scroll-animate">
         <div className="main-services-container">
           <div className="services-grid">
             <div className="service-detail-card">
@@ -140,7 +160,7 @@ const Services: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Process Section */}
-      <section className="process-section">
+      <section className="process-section scroll-animate">
         <div className="process-container">
           <h2>Bagaimana Cara Kerjanya?</h2>
           <div className="process-steps">
@@ -169,7 +189,7 @@ const Services: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* FAQ Section */}
-      <section className="faq-section">
+      <section className="faq-section scroll-animate">
         <div className="faq-container">
           <h2>Pertanyaan Umum</h2>
           <div className="faq-grid">
@@ -194,7 +214,7 @@ const Services: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="services-cta-section">
+      <section className="services-cta-section scroll-animate">
         <div className="services-cta-container">
           <h2>Siap Mengembangkan Karir IT Anda?</h2>
           <p>Mulai perjalanan karir impian Anda bersama tim ahli CareerGuide</p>

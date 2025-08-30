@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './SuccessStories.css';
 
 interface Props {
@@ -6,6 +6,26 @@ interface Props {
 }
 
 const SuccessStories: React.FC<Props> = ({ onBack }) => {
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    const animateElements = document.querySelectorAll('.scroll-animate');
+    animateElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="success-stories-page">
       {/* Hero Section */}
@@ -17,7 +37,7 @@ const SuccessStories: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Featured Success Story */}
-      <section className="featured-story-section">
+      <section className="featured-story-section scroll-animate">
         <div className="featured-story-container">
           <div className="featured-story">
             <div className="story-content">
@@ -53,7 +73,7 @@ const SuccessStories: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Success Stories Grid */}
-      <section className="stories-grid-section">
+      <section className="stories-grid-section scroll-animate">
         <div className="stories-grid-container">
           <h2>Lebih Banyak Kisah Inspiratif</h2>
           
@@ -182,7 +202,7 @@ const SuccessStories: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Statistics Section */}
-      <section className="success-stats-section">
+      <section className="success-stats-section scroll-animate">
         <div className="success-stats-container">
           <h2>Pencapaian Klien Kami</h2>
           <div className="stats-grid">
@@ -207,7 +227,7 @@ const SuccessStories: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="stories-cta-section">
+      <section className="stories-cta-section scroll-animate">
         <div className="stories-cta-container">
           <h2>Siap Menjadi Success Story Berikutnya?</h2>
           <p>Bergabunglah dengan ratusan profesional yang telah mengubah hidup mereka</p>

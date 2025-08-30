@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './About.css';
 
 interface Props {
@@ -6,6 +6,26 @@ interface Props {
 }
 
 const About: React.FC<Props> = ({ onBack }) => {
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    const animateElements = document.querySelectorAll('.scroll-animate');
+    animateElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="about-page">
       {/* Hero Section */}
@@ -17,7 +37,7 @@ const About: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Mission Section */}
-      <section className="mission-section">
+      <section className="mission-section scroll-animate">
         <div className="mission-container">
           <div className="mission-content">
             <div className="mission-left">
@@ -60,7 +80,7 @@ const About: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Team Section */}
-      <section className="team-section">
+      <section className="team-section scroll-animate">
         <div className="team-container">
           <h2>Tim Ahli Kami</h2>
           <p>Didukung oleh para profesional berpengalaman di bidang teknologi dan pengembangan karir</p>
@@ -103,7 +123,7 @@ const About: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* Values Section */}
-      <section className="values-section">
+      <section className="values-section scroll-animate">
         <div className="values-container">
           <h2>Nilai-Nilai Kami</h2>
           <div className="values-grid">
@@ -132,7 +152,7 @@ const About: React.FC<Props> = ({ onBack }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="about-cta-section">
+      <section className="about-cta-section scroll-animate">
         <div className="about-cta-container">
           <h2>Siap Memulai Perjalanan Karir Anda?</h2>
           <p>Bergabunglah dengan ribuan profesional yang telah menemukan jalur karir impian mereka</p>

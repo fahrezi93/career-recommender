@@ -60,7 +60,7 @@
   color: var(--accent-green);
   line-height: 1;
   margin-bottom: 1rem;
-  font-family: serif;
+  font-family: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .story-content h2 {
