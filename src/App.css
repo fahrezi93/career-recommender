@@ -8,7 +8,7 @@
   --primary-green-light: #0a6b47;
   --primary-green-dark: #054429;
   --accent-olive: #CED46A;
-  --accent-green: #8B5A3C;
+  --accent-green: #07553B;
   --accent-olive-light: #d6db7a;
   --neutral-50: #f8fafc;
   --neutral-100: #f9fafb;
@@ -137,9 +137,10 @@ body {
   background: linear-gradient(135deg, var(--primary-green), var(--accent-olive));
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   border-radius: 50px;
   font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(7, 85, 59, 0.2);
