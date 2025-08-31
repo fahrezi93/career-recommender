@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700;800&display=swap');
+
 :root {
-  font-family: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Lexend Deca', 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
@@ -36,7 +38,7 @@
 
 body {
   margin: 0;
-  font-family: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Lexend Deca', 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #ffffff;

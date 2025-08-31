@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Home.css';
 
 interface Props {
@@ -6,7 +6,46 @@ interface Props {
 }
 
 const Home: React.FC<Props> = ({ onStart }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [statsVisible, setStatsVisible] = useState(false);
+
   useEffect(() => {
+    // Trigger initial animations
+    setTimeout(() => setIsLoaded(true), 100);
+    setTimeout(() => setStatsVisible(true), 1200);
+
+    // Counter animation for stats
+    const animateCounter = (element: HTMLElement, target: number, suffix: string) => {
+      let current = 0;
+      const increment = target / 60; // 60 frames for smooth animation
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        
+        if (suffix === 'M+') {
+          element.textContent = `${(current / 1000000).toFixed(0)}M+`;
+        } else if (suffix === 'k+') {
+          element.textContent = `${(current / 1000).toFixed(0)}k+`;
+        } else {
+          element.textContent = `${Math.floor(current)}+`;
+        }
+      }, 16);
+    };
+
+    // Start counter animations when stats become visible
+    setTimeout(() => {
+      const statNumbers = document.querySelectorAll('.stat-number');
+      statNumbers.forEach((stat) => {
+        const target = parseInt((stat as HTMLElement).dataset.target || '0');
+        const text = (stat as HTMLElement).textContent || '';
+        const suffix = text.includes('M+') ? 'M+' : text.includes('k+') ? 'k+' : '+';
+        animateCounter(stat as HTMLElement, target, suffix);
+      });
+    }, 1400);
+
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -50px 0px'
@@ -30,21 +69,21 @@ const Home: React.FC<Props> = ({ onStart }) => {
   return (
     <div className="home-container">
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className={`hero-section ${isLoaded ? 'loaded' : ''}`}>
         <div className="hero-content">
-          <div className="hero-left">
-            <div className="hero-badge">
-              <span className="badge-icon">🎯</span>
+          <div className={`hero-left ${isLoaded ? 'animate-in' : ''}`}>
+            <div className={`hero-badge ${isLoaded ? 'fade-slide-up' : ''}`}>
+              <span className="badge-icon">👨‍💻</span>
               <span>Mulai Konsultasi</span>
             </div>
-            <h1 className="hero-title">
-              Karir Impian Anda Dimulai dari <span className="highlight">Sini</span>.
+            <h1 className={`hero-title ${isLoaded ? 'fade-slide-up' : ''}`}>
+              Karir Impian Anda Dimulai dari <span className={`highlight-animated ${isLoaded ? 'animate-highlight' : ''}`}>Sini</span>.
             </h1>
             <p className="hero-description">
               Temukan potensi sejati Anda di dunia teknologi dengan rekomendasi karir yang dipersonalisasi 
               dan panduan strategis yang tepat sasaran.
             </p>
-            <button onClick={onStart} className="hero-cta-button">
+            <button onClick={onStart} className={`hero-cta-button ${isLoaded ? 'fade-slide-up' : ''}`}>
               <span>Mulai Tes Karir</span>
               <span className="button-icon">→</span>
             </button>
@@ -52,25 +91,25 @@ const Home: React.FC<Props> = ({ onStart }) => {
           <div className="hero-right">
             <div className="hero-image-container">
               <img 
-                src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600&h=400&fit=crop" 
+                src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" 
                 alt="Professional consultant" 
                 className="hero-image"
               />
-              <div className="floating-stats">
-                <div className="stat-card">
-                  <div className="stat-number">200+</div>
+              <div className={`floating-stats ${statsVisible ? 'stats-visible' : ''}`}>
+                <div className="stat-card stat-1">
+                  <div className="stat-number" data-target="200">0+</div>
                   <div className="stat-label">Pencocokan Sukses</div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-number">8M+</div>
+                <div className="stat-card stat-2">
+                  <div className="stat-number" data-target="8000000">0M+</div>
                   <div className="stat-label">Profil Dihasilkan</div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-number">3k+</div>
+                <div className="stat-card stat-3">
+                  <div className="stat-number" data-target="3000">0k+</div>
                   <div className="stat-label">Klien Puas</div>
                 </div>
-                <div className="stat-card">
-                  <div className="stat-number">500+</div>
+                <div className="stat-card stat-4">
+                  <div className="stat-number" data-target="500">0+</div>
                   <div className="stat-label">Proyek Berhasil</div>
                 </div>
               </div>
@@ -158,7 +197,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
           </div>
           <div className="about-right">
             <img 
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" 
+              src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" 
               alt="Kolaborasi tim" 
               className="about-image"
             />
@@ -212,7 +251,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
           </div>
           <div className="blog-grid">
             <div className="blog-card">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=250&fit=crop" alt="Blog post" className="blog-image" />
+              <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop" alt="Blog post" className="blog-image" />
               <div className="blog-content">
                 <h3>Wawasan & Strategi untuk Membangun Karir Impian Anda</h3>
                 <p>Temukan elemen kunci yang membuat karir Anda menonjol dan membangun kepercayaan dengan audiens.</p>
@@ -220,7 +259,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
               </div>
             </div>
             <div className="blog-card">
-              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop" alt="Blog post" className="blog-image" />
+              <img src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop" alt="Blog post" className="blog-image" />
               <div className="blog-content">
                 <h3>Mengoptimalkan Profil LinkedIn Anda di 2025</h3>
                 <p>Pelajari strategi terbaru untuk membuat kehadiran LinkedIn yang kuat, profesional, dan mudah ditemukan.</p>
@@ -228,7 +267,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
               </div>
             </div>
             <div className="blog-card">
-              <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=250&fit=crop" alt="Blog post" className="blog-image" />
+              <img src="https://images.pexels.com/photos/3184639/pexels-photo-3184639.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop" alt="Blog post" className="blog-image" />
               <div className="blog-content">
                 <h3>Mengapa Konten adalah Mata Uang Personal Branding</h3>
                 <p>Pahami bagaimana membuat konten berharga memposisikan Anda sebagai otoritas di bidang Anda.</p>
@@ -252,7 +291,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
               <div className="testimonial-quote">"</div>
               <p>Sebelum bekerja dengan CareerGuide, saya kesulitan mengartikulasikan apa yang membuat saya unik. Sekarang, personal brand saya berbicara untuk saya—bahkan sebelum saya memasuki ruangan.</p>
               <div className="testimonial-author">
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face" alt="David R." className="author-avatar" />
+                <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop" alt="David R." className="author-avatar" />
                 <div className="author-info">
                   <div className="author-name">David R.</div>
                   <div className="author-title">Manajer Pemasaran</div>
@@ -263,7 +302,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
               <div className="testimonial-quote">"</div>
               <p>Berkat konsultasi Anda, akhirnya saya memiliki profil LinkedIn dan website pribadi yang mencerminkan siapa saya. Saya sudah menerima dua tawaran kerja dalam beberapa minggu!</p>
               <div className="testimonial-author">
-                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=60&h=60&fit=crop&crop=face" alt="Nadia S." className="author-avatar" />
+                <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop" alt="Nadia S." className="author-avatar" />
                 <div className="author-info">
                   <div className="author-name">Nadia S.</div>
                   <div className="author-title">UX Designer</div>
@@ -274,7 +313,7 @@ const Home: React.FC<Props> = ({ onStart }) => {
               <div className="testimonial-quote">"</div>
               <p>Dulu saya merasa tidak terlihat di industri saya. Sekarang saya diundang ke podcast, panel, dan konferensi—hanya dengan menampilkan diri saya yang autentik. Proses Anda benar-benar berhasil.</p>
               <div className="testimonial-author">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face" alt="James T." className="author-avatar" />
+                <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop" alt="James T." className="author-avatar" />
                 <div className="author-info">
                   <div className="author-name">James T.</div>
                   <div className="author-title">Konsultan Teknologi</div>
