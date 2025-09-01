@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home';
-import About from './components/About';
-import Services from './components/Services';
-import Blog from './components/Blog';
-import SuccessStories from './components/SuccessStories';
 import Questionnaire from './components/Questionnaire';
 import Results from './components/Results';
+import About from './components/About';
+import Services from './components/Services';
+import DetailedServices from './components/DetailedServices';
+import SuccessStories from './components/SuccessStories';
+import Blog from './components/Blog';
 
 import { CAREER_PATHS, QUESTIONS, calculateSAW, MARKET_INSIGHTS } from './data/knowledgeBase';
 import type { UserInput } from './data/knowledgeBase';
@@ -268,7 +269,8 @@ function App() {
           <Route path="/questionnaire" element={<Questionnaire questions={QUESTIONS} onSubmit={handleGetRecommendationsWithNavigation} />} />
           <Route path="/results" element={<Results sortedCareers={recommendations} onReset={handleResetWithNavigation} />} />
           <Route path="/about" element={<About onBack={handleBackToHome} />} />
-          <Route path="/services" element={<Services onBack={handleBackToHome} />} />
+          <Route path="/services" element={<Services onBack={() => handleNavigation('home')} />} />
+          <Route path="/layanan-kami" element={<DetailedServices onBack={() => handleNavigation('home')} />} />
           <Route path="/success-stories" element={<SuccessStories onBack={handleBackToHome} />} />
           <Route path="/blog" element={<Blog onBack={handleBackToHome} />} />
         </Routes>
