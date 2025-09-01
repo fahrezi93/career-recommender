@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
-import { CAREER_PATHS, QUESTIONS, RULES } from './data/knowledgeBase';
-import Questionnaire from './components/Questionnaire';
-import Results from './components/Results';
 import Home from './components/Home';
 import About from './components/About';
 import Services from './components/Services';
-import SuccessStories from './components/SuccessStories';
 import Blog from './components/Blog';
+import SuccessStories from './components/SuccessStories';
+import { CAREER_PATHS, QUESTIONS, RULES } from './data/knowledgeBase';
+import Questionnaire from './components/Questionnaire';
+import Results from './components/Results';
 
 // Definisikan tipe untuk hasil rekomendasi agar lebih kuat
 interface Recommendation {
@@ -23,6 +23,25 @@ function App() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [currentView, setCurrentView] = useState<View>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Scroll to top whenever the current view changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentView]);
+
+  // Handle body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add('mobile-menu-open');
+    } else {
+      document.body.classList.remove('mobile-menu-open');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('mobile-menu-open');
+    };
+  }, [isMobileMenuOpen]);
 
   const handleGetRecommendations = (selectedIds: Set<string>) => {
     // 1. Inisialisasi skor untuk setiap karir
@@ -57,15 +76,21 @@ function App() {
   const handleReset = () => {
     setCurrentView('home');
     setRecommendations([]);
+    // Scroll to top when resetting
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavigation = (view: View) => {
     setCurrentView(view);
     setIsMobileMenuOpen(false); // Close mobile menu when navigating
+    // Scroll to top when navigating to a new page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToHome = () => {
     setCurrentView('home');
+    // Scroll to top when going back to home
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const renderContent = () => {
@@ -151,6 +176,19 @@ function App() {
         {isMobileMenuOpen && (
           <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
             <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+              {/* Close Button */}
+              <div className="mobile-menu-header">
+                <button 
+                  className="mobile-menu-close"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              
               <button 
                 onClick={() => handleNavigation('home')} 
                 className={`mobile-nav-link ${currentView === 'home' ? 'active' : ''}`}
