@@ -22,6 +22,7 @@ type View = 'home' | 'questionnaire' | 'results' | 'about' | 'services' | 'succe
 function App() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [currentView, setCurrentView] = useState<View>('home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleGetRecommendations = (selectedIds: Set<string>) => {
     // 1. Inisialisasi skor untuk setiap karir
@@ -60,6 +61,7 @@ function App() {
 
   const handleNavigation = (view: View) => {
     setCurrentView(view);
+    setIsMobileMenuOpen(false); // Close mobile menu when navigating
   };
 
   const handleBackToHome = () => {
@@ -132,7 +134,56 @@ function App() {
               Blog
             </button>
           </nav>
+          
+          {/* Mobile Menu Button */}
+          <button 
+            className="mobile-menu-button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
+        
+        {/* Mobile Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+            <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => handleNavigation('home')} 
+                className={`mobile-nav-link ${currentView === 'home' ? 'active' : ''}`}
+              >
+                Beranda
+              </button>
+              <button 
+                onClick={() => handleNavigation('about')} 
+                className={`mobile-nav-link ${currentView === 'about' ? 'active' : ''}`}
+              >
+                Tentang
+              </button>
+              <button 
+                onClick={() => handleNavigation('services')} 
+                className={`mobile-nav-link ${currentView === 'services' ? 'active' : ''}`}
+              >
+                Layanan
+              </button>
+              <button 
+                onClick={() => handleNavigation('success-stories')} 
+                className={`mobile-nav-link ${currentView === 'success-stories' ? 'active' : ''}`}
+              >
+                Kisah Sukses
+              </button>
+              <button 
+                onClick={() => handleNavigation('blog')} 
+                className={`mobile-nav-link ${currentView === 'blog' ? 'active' : ''}`}
+              >
+                Blog
+              </button>
+            </nav>
+          </div>
+        )}
       </header>
       <main>
         {renderContent()}
