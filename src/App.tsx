@@ -7,6 +7,12 @@ import Results from './components/Results';
 import About from './components/About';
 import Services from './components/Services';
 import DetailedServices from './components/DetailedServices';
+import TesMintakBakat from './components/TesMintakBakat';
+import KonsultasiKarir from './components/KonsultasiKarir';
+import RekomendasiJalurKarir from './components/RekomendasiJalurKarir';
+import PanduanSkillDevelopment from './components/PanduanSkillDevelopment';
+import CareerRoadmap from './components/CareerRoadmap';
+import AnalisisPotensiDiri from './components/AnalisisPotensiDiri';
 import SuccessStories from './components/SuccessStories';
 import Blog from './components/Blog';
 
@@ -271,6 +277,12 @@ function App() {
           <Route path="/about" element={<About onBack={handleBackToHome} />} />
           <Route path="/services" element={<Services onBack={() => handleNavigation('home')} />} />
           <Route path="/layanan-kami" element={<DetailedServices onBack={() => handleNavigation('home')} />} />
+          <Route path="/tes-minat-bakat" element={<TesMintakBakat onBack={() => handleNavigation('services')} />} />
+          <Route path="/konsultasi-karir" element={<KonsultasiKarir onBack={() => handleNavigation('services')} />} />
+          <Route path="/rekomendasi-jalur-karir" element={<RekomendasiJalurKarir onBack={() => handleNavigation('services')} />} />
+          <Route path="/panduan-skill-development" element={<PanduanSkillDevelopment onBack={() => handleNavigation('services')} />} />
+          <Route path="/career-roadmap" element={<CareerRoadmap onBack={() => handleNavigation('services')} />} />
+          <Route path="/analisis-potensi-diri" element={<AnalisisPotensiDiri onBack={() => handleNavigation('services')} />} />
           <Route path="/success-stories" element={<SuccessStories onBack={handleBackToHome} />} />
           <Route path="/blog" element={<Blog onBack={handleBackToHome} />} />
         </Routes>

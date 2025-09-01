@@ -357,12 +357,12 @@ const Home: React.FC<Props> = ({ onStart }) => {
               <div className="footer-column">
                 <h4>Layanan Kami</h4>
                 <ul>
-                  <li><a href="#">Tes Minat & Bakat</a></li>
-                  <li><a href="#">Konsultasi Karir</a></li>
-                  <li><a href="#">Rekomendasi Jalur Karir</a></li>
-                  <li><a href="#">Panduan Skill Development</a></li>
-                  <li><a href="#">Career Roadmap</a></li>
-                  <li><a href="#">Analisis Potensi Diri</a></li>
+                  <li><a href="/tes-minat-bakat">Tes Minat & Bakat</a></li>
+                  <li><a href="/konsultasi-karir">Konsultasi Karir</a></li>
+                  <li><a href="/rekomendasi-jalur-karir">Rekomendasi Jalur Karir</a></li>
+                  <li><a href="/panduan-skill-development">Panduan Skill Development</a></li>
+                  <li><a href="/career-roadmap">Career Roadmap</a></li>
+                  <li><a href="/analisis-potensi-diri">Analisis Potensi Diri</a></li>
                 </ul>
               </div>
             </div>
