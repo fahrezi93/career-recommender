@@ -1,100 +1,252 @@
 
 import React, { useState } from 'react';
-import type { Question } from '../data/knowledgeBase';
+import type { Question, UserInput } from '../data/knowledgeBase';
 import './Questionnaire.css';
 
 interface Props {
   questions: Question[];
-  onSubmit: (selectedIds: Set<string>) => void;
+  onSubmit: (userInput: UserInput) => void;
 }
 
 const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
-  const [selectedAnswers, setSelectedAnswers] = useState<Set<string>>(new Set());
+  const [currentStep, setCurrentStep] = useState(1);
+  const [academicScores, setAcademicScores] = useState<{ [key: string]: number }>({});
+  const [interestRatings, setInterestRatings] = useState<{ [key: string]: number }>({});
+  const [skillRatings, setSkillRatings] = useState<{ [key: string]: number }>({});
+  const [criteriaWeights, setCriteriaWeights] = useState({
+    akademis: 40,
+    soft_skill: 30,
+    teknis: 30
+  });
 
-  const handleCheckboxChange = (questionId: string) => {
-    const newSelectedAnswers = new Set(selectedAnswers);
-    if (newSelectedAnswers.has(questionId)) {
-      newSelectedAnswers.delete(questionId);
-    } else {
-      newSelectedAnswers.add(questionId);
+  const academicQuestions = questions.filter(q => q.category === 'academic');
+  const interestQuestions = questions.filter(q => q.category === 'interest');
+  const skillQuestions = questions.filter(q => q.category === 'skill');
+
+  const handleAcademicScoreChange = (questionId: string, score: number) => {
+    const criteriaId = questions.find(q => q.id === questionId)?.criteriaId;
+    if (criteriaId) {
+      const key = criteriaId.replace('c_', '');
+      setAcademicScores(prev => ({ ...prev, [key]: score }));
     }
-    setSelectedAnswers(newSelectedAnswers);
+  };
+
+  const handleRatingChange = (questionId: string, rating: number, type: 'interest' | 'skill') => {
+    const criteriaId = questions.find(q => q.id === questionId)?.criteriaId;
+    if (criteriaId) {
+      if (type === 'interest') {
+        setInterestRatings(prev => ({ ...prev, [criteriaId]: rating }));
+      } else {
+        setSkillRatings(prev => ({ ...prev, [criteriaId]: rating }));
+      }
+    }
+  };
+
+  const handleWeightChange = (category: keyof typeof criteriaWeights, value: number) => {
+    setCriteriaWeights(prev => ({ ...prev, [category]: value }));
+  };
+
+  const normalizeWeights = () => {
+    const total = criteriaWeights.akademis + criteriaWeights.soft_skill + criteriaWeights.teknis;
+    return {
+      akademis: criteriaWeights.akademis / total,
+      soft_skill: criteriaWeights.soft_skill / total,
+      teknis: criteriaWeights.teknis / total
+    };
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(selectedAnswers);
+    const userInput: UserInput = {
+      academicScores,
+      interestRatings,
+      skillRatings,
+      criteriaWeights: normalizeWeights()
+    };
+    onSubmit(userInput);
   };
 
-  const interestQuestions = questions.filter(q => q.category === 'interest');
-  const skillQuestions = questions.filter(q => q.category === 'skill');
+  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+  const renderStepIndicator = () => (
+    <div className="step-indicator">
+      {[1, 2, 3].map(step => (
+        <div key={step} className={`step ${currentStep >= step ? 'active' : ''}`}>
+          <div className="step-number">{step}</div>
+          <div className="step-label">
+            {step === 1 && 'Nilai Akademis'}
+            {step === 2 && 'Minat & Keterampilan'}
+            {step === 3 && 'Prioritas Anda'}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderStep1 = () => (
+    <div className="step-content">
+      <h2 className="section-title">Langkah 1: Input Nilai Akademis</h2>
+      <p className="section-description">Masukkan nilai Anda (0-100) untuk mata kuliah berikut:</p>
+      <div className="academic-scores">
+        {academicQuestions.map(question => (
+          <div key={question.id} className="academic-input">
+            <label htmlFor={question.id} className="academic-label">
+              {question.text}
+            </label>
+            <input
+              type="number"
+              id={question.id}
+              min="0"
+              max="100"
+              value={academicScores[question.criteriaId?.replace('c_', '') || ''] || ''}
+              onChange={(e) => handleAcademicScoreChange(question.id, parseInt(e.target.value) || 0)}
+              className="academic-score-input"
+              placeholder="0-100"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="step-content">
+      <h2 className="section-title">Langkah 2: Penilaian Diri</h2>
+      
+      <div className="subsection">
+        <h3 className="subsection-title">Minat & Soft Skills</h3>
+        <p className="section-description">Beri rating 1-5 seberapa tertarik/kuat Anda di area berikut:</p>
+        <div className="rating-group">
+          {interestQuestions.map(question => (
+            <div key={question.id} className="rating-item">
+              <label className="rating-label">{question.text}</label>
+              <div className="rating-scale">
+                {[1, 2, 3, 4, 5].map(rating => (
+                  <button
+                    key={rating}
+                    type="button"
+                    className={`rating-button ${interestRatings[question.criteriaId || ''] === rating ? 'active' : ''}`}
+                    onClick={() => handleRatingChange(question.id, rating, 'interest')}
+                  >
+                    {rating}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="subsection">
+        <h3 className="subsection-title">Keterampilan Teknis</h3>
+        <p className="section-description">Beri rating 1-5 tingkat kemampuan Anda:</p>
+        <div className="rating-group">
+          {skillQuestions.map(question => (
+            <div key={question.id} className="rating-item">
+              <label className="rating-label">{question.text}</label>
+              <div className="rating-scale">
+                {[1, 2, 3, 4, 5].map(rating => (
+                  <button
+                    key={rating}
+                    type="button"
+                    className={`rating-button ${skillRatings[question.criteriaId || ''] === rating ? 'active' : ''}`}
+                    onClick={() => handleRatingChange(question.id, rating, 'skill')}
+                  >
+                    {rating}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="step-content">
+      <h2 className="section-title">Langkah 3: Tentukan Prioritas Anda</h2>
+      <p className="section-description">Seberapa penting setiap kategori bagi Anda? (Total harus 100%)</p>
+      
+      <div className="weight-inputs">
+        <div className="weight-item">
+          <label className="weight-label">
+            Nilai Akademis ({criteriaWeights.akademis}%)
+          </label>
+          <input
+            type="range"
+            min="10"
+            max="70"
+            value={criteriaWeights.akademis}
+            onChange={(e) => handleWeightChange('akademis', parseInt(e.target.value))}
+            className="weight-slider"
+          />
+        </div>
+        
+        <div className="weight-item">
+          <label className="weight-label">
+            Minat & Soft Skills ({criteriaWeights.soft_skill}%)
+          </label>
+          <input
+            type="range"
+            min="10"
+            max="70"
+            value={criteriaWeights.soft_skill}
+            onChange={(e) => handleWeightChange('soft_skill', parseInt(e.target.value))}
+            className="weight-slider"
+          />
+        </div>
+        
+        <div className="weight-item">
+          <label className="weight-label">
+            Keterampilan Teknis ({criteriaWeights.teknis}%)
+          </label>
+          <input
+            type="range"
+            min="10"
+            max="70"
+            value={criteriaWeights.teknis}
+            onChange={(e) => handleWeightChange('teknis', parseInt(e.target.value))}
+            className="weight-slider"
+          />
+        </div>
+      </div>
+      
+      <div className="weight-total">
+        Total: {criteriaWeights.akademis + criteriaWeights.soft_skill + criteriaWeights.teknis}%
+      </div>
+    </div>
+  );
 
   return (
     <div className="questionnaire-container">
       <h1 className="questionnaire-title">Temukan Karir IT Impian Anda</h1>
-      <p className="questionnaire-description">Jawab pertanyaan berikut untuk mendapatkan rekomendasi karir yang paling sesuai dengan profil Anda</p>
+      <p className="questionnaire-description">Sistem rekomendasi berbasis AI dengan metode MCDM untuk hasil yang lebih personal</p>
+
+      {renderStepIndicator()}
 
       <form onSubmit={handleSubmit}>
-        <div className="section">
-          <h2 className="section-title">Minat & Preferensi</h2>
-          <p className="section-description">Pilih semua area yang menarik minat Anda di bidang teknologi</p>
-          <div className="question-group">
-            {interestQuestions.map(question => (
-              <div 
-                key={question.id} 
-                className={`checkbox-container ${selectedAnswers.has(question.id) ? 'checked' : ''}`}
-                onClick={() => handleCheckboxChange(question.id)}
-              >
-                <input
-                  type="checkbox"
-                  id={question.id}
-                  checked={selectedAnswers.has(question.id)}
-                  onChange={() => {}}
-                  readOnly
-                />
-                <label 
-                  htmlFor={question.id} 
-                  className="checkbox-label"
-                >
-                  {question.text}
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
+        {currentStep === 1 && renderStep1()}
+        {currentStep === 2 && renderStep2()}
+        {currentStep === 3 && renderStep3()}
 
-        <div className="section">
-          <h2 className="section-title">Keterampilan & Teknologi</h2>
-          <p className="section-description">Pilih teknologi atau keahlian yang sudah Anda miliki atau tertarik untuk dipelajari</p>
-          <div className="question-group skills">
-            {skillQuestions.map(question => (
-              <div 
-                key={question.id} 
-                className={`skill-tag ${selectedAnswers.has(question.id) ? 'checked' : ''}`}
-                onClick={() => handleCheckboxChange(question.id)}
-              >
-                <input
-                  type="checkbox"
-                  id={question.id}
-                  checked={selectedAnswers.has(question.id)}
-                  onChange={() => {}}
-                  readOnly
-                />
-                <label 
-                  htmlFor={question.id} 
-                  className="checkbox-label"
-                >
-                  {question.text}
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="submit-section">
-          <button type="submit" className="submit-button">
-            Dapatkan Rekomendasi Karir
-          </button>
+        <div className="navigation-buttons">
+          {currentStep > 1 && (
+            <button type="button" onClick={prevStep} className="nav-button prev-button">
+              ← Sebelumnya
+            </button>
+          )}
+          
+          {currentStep < 3 ? (
+            <button type="button" onClick={nextStep} className="nav-button next-button">
+              Selanjutnya →
+            </button>
+          ) : (
+            <button type="submit" className="submit-button">
+              Dapatkan Rekomendasi Karir
+            </button>
+          )}
         </div>
       </form>
     </div>

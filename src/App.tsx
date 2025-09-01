@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home';
 import About from './components/About';
 import Services from './components/Services';
 import Blog from './components/Blog';
 import SuccessStories from './components/SuccessStories';
-import { CAREER_PATHS, QUESTIONS, RULES } from './data/knowledgeBase';
 import Questionnaire from './components/Questionnaire';
 import Results from './components/Results';
+
+import { CAREER_PATHS, QUESTIONS, calculateSAW, MARKET_INSIGHTS } from './data/knowledgeBase';
+import type { UserInput } from './data/knowledgeBase';
 
 // Definisikan tipe untuk hasil rekomendasi agar lebih kuat
 interface Recommendation {
@@ -15,11 +18,19 @@ interface Recommendation {
   name: string;
   description: string;
   score: number;
+  justifications: string[];
+  marketInsight?: {
+    trendingSkills: string[];
+    demandLevel: 'high' | 'medium' | 'low';
+    averageSalary: string;
+  };
 }
 
 type View = 'home' | 'questionnaire' | 'results' | 'about' | 'services' | 'success-stories' | 'blog';
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [currentView, setCurrentView] = useState<View>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,33 +54,35 @@ function App() {
     };
   }, [isMobileMenuOpen]);
 
-  const handleGetRecommendations = (selectedIds: Set<string>) => {
-    // 1. Inisialisasi skor untuk setiap karir
-    const scores: { [key: string]: number } = {};
-    CAREER_PATHS.forEach(path => {
-      scores[path.id] = 0;
+  const handleGetRecommendations = (userInput: UserInput) => {
+    // 1. Gunakan algoritma SAW untuk menghitung rekomendasi
+    const sawResults = calculateSAW(userInput);
+
+    // 2. Gabungkan dengan data karir dan wawasan pasar
+    const recommendations: Recommendation[] = sawResults.map(result => {
+      const career = CAREER_PATHS.find(path => path.id === result.careerId);
+      const marketInsight = MARKET_INSIGHTS.find(insight => insight.careerId === result.careerId);
+      
+      if (!career) {
+        throw new Error(`Career not found: ${result.careerId}`);
+      }
+
+      return {
+        id: career.id,
+        name: career.name,
+        description: career.description,
+        score: Math.round(result.score * 100), // Convert to percentage
+        justifications: result.justifications,
+        marketInsight: marketInsight ? {
+          trendingSkills: marketInsight.trendingSkills,
+          demandLevel: marketInsight.demandLevel,
+          averageSalary: marketInsight.averageSalary
+        } : undefined
+      };
     });
 
-    // 2. Hitung skor berdasarkan jawaban
-    selectedIds.forEach(questionId => {
-      RULES.forEach(rule => {
-        if (rule.questionId === questionId) {
-          scores[rule.careerId] += rule.score;
-        }
-      });
-    });
-
-    // 3. Ubah objek skor menjadi array dan gabungkan dengan data karir
-    const calculatedCareers = CAREER_PATHS.map(path => ({
-      ...path,
-      score: scores[path.id],
-    }));
-
-    // 4. Urutkan karir berdasarkan skor dari tertinggi ke terendah
-    const sortedCareers = calculatedCareers.sort((a, b) => b.score - a.score);
-
-    // 5. Simpan hasil dan tampilkan halaman hasil
-    setRecommendations(sortedCareers);
+    // 3. Simpan hasil dan tampilkan halaman hasil
+    setRecommendations(recommendations);
     setCurrentView('results');
   };
 
@@ -83,34 +96,60 @@ function App() {
   const handleNavigation = (view: View) => {
     setCurrentView(view);
     setIsMobileMenuOpen(false); // Close mobile menu when navigating
+    // Navigate using React Router
+    if (view === 'home') {
+      navigate('/');
+    } else if (view === 'questionnaire') {
+      navigate('/questionnaire');
+    } else if (view === 'results') {
+      navigate('/results');
+    } else {
+      navigate(`/${view}`);
+    }
     // Scroll to top when navigating to a new page
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToHome = () => {
     setCurrentView('home');
+    navigate('/');
     // Scroll to top when going back to home
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const renderContent = () => {
-    switch (currentView) {
-      case 'questionnaire':
-        return <Questionnaire questions={QUESTIONS} onSubmit={handleGetRecommendations} />;
-      case 'results':
-        return <Results sortedCareers={recommendations} onReset={handleReset} />;
-      case 'about':
-        return <About onBack={handleBackToHome} />;
-      case 'services':
-        return <Services onBack={handleBackToHome} />;
-      case 'success-stories':
-        return <SuccessStories onBack={handleBackToHome} />;
-      case 'blog':
-        return <Blog onBack={handleBackToHome} />;
-      case 'home':
-      default:
-        return <Home onStart={() => setCurrentView('questionnaire')} />;
+  // Update current view based on route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/') {
+      setCurrentView('home');
+    } else if (path === '/questionnaire') {
+      setCurrentView('questionnaire');
+    } else if (path === '/results') {
+      setCurrentView('results');
+    } else if (path === '/about') {
+      setCurrentView('about');
+    } else if (path === '/services') {
+      setCurrentView('services');
+    } else if (path === '/success-stories') {
+      setCurrentView('success-stories');
+    } else if (path === '/blog') {
+      setCurrentView('blog');
     }
+  }, [location.pathname]);
+
+
+  const handleStartQuestionnaire = () => {
+    handleNavigation('questionnaire');
+  };
+
+  const handleGetRecommendationsWithNavigation = (userInput: UserInput) => {
+    handleGetRecommendations(userInput);
+    handleNavigation('results');
+  };
+
+  const handleResetWithNavigation = () => {
+    handleReset();
+    handleNavigation('home');
   };
 
   return (
@@ -224,7 +263,15 @@ function App() {
         )}
       </header>
       <main>
-        {renderContent()}
+        <Routes>
+          <Route path="/" element={<Home onStart={handleStartQuestionnaire} />} />
+          <Route path="/questionnaire" element={<Questionnaire questions={QUESTIONS} onSubmit={handleGetRecommendationsWithNavigation} />} />
+          <Route path="/results" element={<Results sortedCareers={recommendations} onReset={handleResetWithNavigation} />} />
+          <Route path="/about" element={<About onBack={handleBackToHome} />} />
+          <Route path="/services" element={<Services onBack={handleBackToHome} />} />
+          <Route path="/success-stories" element={<SuccessStories onBack={handleBackToHome} />} />
+          <Route path="/blog" element={<Blog onBack={handleBackToHome} />} />
+        </Routes>
       </main>
     </div>
   );
