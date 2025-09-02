@@ -80,7 +80,7 @@ const SuccessStories: React.FC<Props> = ({ onBack }) => {
           <div className="stories-grid">
             <div className="story-card">
               <img 
-                src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=200&fit=crop" 
+                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=200&fit=crop" 
                 alt="Sarah Putri" 
                 className="story-image"
               />
@@ -140,7 +140,7 @@ const SuccessStories: React.FC<Props> = ({ onBack }) => {
 
             <div className="story-card">
               <img 
-                src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=200&fit=crop" 
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop" 
                 alt="Siti Nurhaliza" 
                 className="story-image"
               />

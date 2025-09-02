@@ -58,15 +58,14 @@ const Services: React.FC<Props> = ({ onBack }) => {
         </div>
       </div>
       
-      <div style={{ marginBottom: '2rem' }}>
-        <button onClick={handleDetailedServices} className="back-button" style={{ marginRight: '1rem' }}>
+      <div className="services-buttons-container">
+        <button onClick={handleDetailedServices} className="back-button">
           Lihat Detail Layanan
         </button>
+        <button onClick={onBack} className="back-button">
+          Kembali ke Beranda
+        </button>
       </div>
-      
-      <button onClick={onBack} className="back-button">
-        Kembali ke Beranda
-      </button>
     </div>
   );
 };
