@@ -16,8 +16,8 @@ import AnalisisPotensiDiri from './components/AnalisisPotensiDiri';
 import SuccessStories from './components/SuccessStories';
 import Blog from './components/Blog';
 
-import { CAREER_PATHS, QUESTIONS, calculateSAW, MARKET_INSIGHTS } from './data/knowledgeBase';
-import type { UserInput } from './data/knowledgeBase';
+import { CAREER_PATHS, QUESTIONS, calculateSAW, calculateCFScore, MARKET_INSIGHTS } from './data/knowledgeBase';
+import type { UserInput, CFRule } from './data/knowledgeBase';
 
 // Definisikan tipe untuk hasil rekomendasi agar lebih kuat
 interface Recommendation {
@@ -25,7 +25,9 @@ interface Recommendation {
   name: string;
   description: string;
   score: number;
+  cfScore: number;
   justifications: string[];
+  activeRules: CFRule[];
   marketInsight?: {
     trendingSkills: string[];
     demandLevel: 'high' | 'medium' | 'low';
@@ -64,22 +66,28 @@ function App() {
   const handleGetRecommendations = (userInput: UserInput) => {
     // 1. Gunakan algoritma SAW untuk menghitung rekomendasi
     const sawResults = calculateSAW(userInput);
+    
+    // 2. Gunakan metode Certainty Factor untuk analisis yang lebih mendalam
+    const cfResults = calculateCFScore(userInput);
 
-    // 2. Gabungkan dengan data karir dan wawasan pasar
-    const recommendations: Recommendation[] = sawResults.map(result => {
-      const career = CAREER_PATHS.find(path => path.id === result.careerId);
-      const marketInsight = MARKET_INSIGHTS.find(insight => insight.careerId === result.careerId);
+    // 3. Gabungkan hasil SAW dan CF dengan data karir dan wawasan pasar
+    const recommendations: Recommendation[] = sawResults.map(sawResult => {
+      const career = CAREER_PATHS.find(path => path.id === sawResult.careerId);
+      const cfResult = cfResults.find(cf => cf.careerId === sawResult.careerId);
+      const marketInsight = MARKET_INSIGHTS.find(insight => insight.careerId === sawResult.careerId);
       
       if (!career) {
-        throw new Error(`Career not found: ${result.careerId}`);
+        throw new Error(`Career not found: ${sawResult.careerId}`);
       }
 
       return {
         id: career.id,
         name: career.name,
         description: career.description,
-        score: Math.round(result.score * 100), // Convert to percentage
-        justifications: result.justifications,
+        score: Math.round(sawResult.score * 100), // SAW score as percentage
+        cfScore: Math.round((cfResult?.cfScore || 0) * 100), // CF score as percentage
+        justifications: cfResult?.justifications || sawResult.justifications,
+        activeRules: cfResult?.activeRules || [],
         marketInsight: marketInsight ? {
           trendingSkills: marketInsight.trendingSkills,
           demandLevel: marketInsight.demandLevel,
@@ -88,8 +96,17 @@ function App() {
       };
     });
 
-    // 3. Simpan hasil dan tampilkan halaman hasil
-    setRecommendations(recommendations);
+    // 4. Sort by combined score (CF score has higher priority)
+    const sortedRecommendations = recommendations.sort((a, b) => {
+      // Primary sort by CF score, secondary by SAW score
+      if (b.cfScore !== a.cfScore) {
+        return b.cfScore - a.cfScore;
+      }
+      return b.score - a.score;
+    });
+
+    // 5. Simpan hasil dan tampilkan halaman hasil
+    setRecommendations(sortedRecommendations);
     setCurrentView('results');
   };
 

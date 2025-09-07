@@ -1,7 +1,26 @@
-
 import React, { useState } from 'react';
-import type { Question, UserInput } from '../data/knowledgeBase';
 import './Questionnaire.css';
+
+interface Question {
+  id: string;
+  text: string;
+  category: string;
+  criteriaId?: string;
+}
+
+interface UserInput {
+  academicScores: { [key: string]: number };
+  interestRatings: { [key: string]: number };
+  skillRatings: { [key: string]: number };
+  criteriaWeights: {
+    akademis: number;
+    soft_skill: number;
+    teknis: number;
+  };
+  academicConfidence: { [key: string]: number };
+  interestConfidence: { [key: string]: number };
+  skillConfidence: { [key: string]: number };
+}
 
 interface Props {
   questions: Question[];
@@ -18,6 +37,10 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
     soft_skill: 30,
     teknis: 30
   });
+  // Certainty Factor states
+  const [academicConfidence, setAcademicConfidence] = useState<{ [key: string]: number }>({});
+  const [interestConfidence, setInterestConfidence] = useState<{ [key: string]: number }>({});
+  const [skillConfidence, setSkillConfidence] = useState<{ [key: string]: number }>({});
 
   const academicQuestions = questions.filter(q => q.category === 'academic');
   const interestQuestions = questions.filter(q => q.category === 'interest');
@@ -31,6 +54,14 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
     }
   };
 
+  const handleAcademicConfidenceChange = (questionId: string, confidence: number) => {
+    const criteriaId = questions.find(q => q.id === questionId)?.criteriaId;
+    if (criteriaId) {
+      const key = criteriaId.replace('c_', '');
+      setAcademicConfidence(prev => ({ ...prev, [key]: confidence }));
+    }
+  };
+
   const handleRatingChange = (questionId: string, rating: number, type: 'interest' | 'skill') => {
     const criteriaId = questions.find(q => q.id === questionId)?.criteriaId;
     if (criteriaId) {
@@ -38,6 +69,17 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
         setInterestRatings(prev => ({ ...prev, [criteriaId]: rating }));
       } else {
         setSkillRatings(prev => ({ ...prev, [criteriaId]: rating }));
+      }
+    }
+  };
+
+  const handleConfidenceChange = (questionId: string, confidence: number, type: 'interest' | 'skill') => {
+    const criteriaId = questions.find(q => q.id === questionId)?.criteriaId;
+    if (criteriaId) {
+      if (type === 'interest') {
+        setInterestConfidence(prev => ({ ...prev, [criteriaId]: confidence }));
+      } else {
+        setSkillConfidence(prev => ({ ...prev, [criteriaId]: confidence }));
       }
     }
   };
@@ -61,7 +103,10 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
       academicScores,
       interestRatings,
       skillRatings,
-      criteriaWeights: normalizeWeights()
+      criteriaWeights: normalizeWeights(),
+      academicConfidence,
+      interestConfidence,
+      skillConfidence
     };
     onSubmit(userInput);
   };
@@ -87,23 +132,36 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
   const renderStep1 = () => (
     <div className="step-content">
       <h2 className="section-title">Langkah 1: Input Nilai Akademis</h2>
-      <p className="section-description">Masukkan nilai Anda (0-100) untuk mata kuliah berikut:</p>
+      <p className="section-description">Masukkan nilai Anda (0-100) dan tingkat keyakinan untuk mata kuliah berikut:</p>
       <div className="academic-scores">
         {academicQuestions.map(question => (
-          <div key={question.id} className="academic-input">
+          <div key={question.id} className="academic-input-cf">
             <label htmlFor={question.id} className="academic-label">
               {question.text}
             </label>
-            <input
-              type="number"
-              id={question.id}
-              min="0"
-              max="100"
-              value={academicScores[question.criteriaId?.replace('c_', '') || ''] || ''}
-              onChange={(e) => handleAcademicScoreChange(question.id, parseInt(e.target.value) || 0)}
-              className="academic-score-input"
-              placeholder="0-100"
-            />
+            <div className="input-group">
+              <input
+                type="number"
+                id={question.id}
+                min="0"
+                max="100"
+                value={academicScores[question.criteriaId?.replace('c_', '') || ''] || ''}
+                onChange={(e) => handleAcademicScoreChange(question.id, parseInt(e.target.value) || 0)}
+                className="academic-score-input"
+                placeholder="0-100"
+              />
+              <select
+                value={academicConfidence[question.criteriaId?.replace('c_', '') || ''] || 0.8}
+                onChange={(e) => handleAcademicConfidenceChange(question.id, parseFloat(e.target.value))}
+                className="confidence-select"
+              >
+                <option value={1.0}>Sangat Yakin (100%)</option>
+                <option value={0.8}>Yakin (80%)</option>
+                <option value={0.6}>Cukup Yakin (60%)</option>
+                <option value={0.4}>Tidak Yakin (40%)</option>
+                <option value={0.2}>Sangat Tidak Yakin (20%)</option>
+              </select>
+            </div>
           </div>
         ))}
       </div>
@@ -116,22 +174,35 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
       
       <div className="subsection">
         <h3 className="subsection-title">Minat & Soft Skills</h3>
-        <p className="section-description">Beri rating 1-5 seberapa tertarik/kuat Anda di area berikut:</p>
+        <p className="section-description">Beri rating 1-5 dan tingkat keyakinan Anda di area berikut:</p>
         <div className="rating-group">
           {interestQuestions.map(question => (
-            <div key={question.id} className="rating-item">
+            <div key={question.id} className="rating-item-cf">
               <label className="rating-label">{question.text}</label>
-              <div className="rating-scale">
-                {[1, 2, 3, 4, 5].map(rating => (
-                  <button
-                    key={rating}
-                    type="button"
-                    className={`rating-button ${interestRatings[question.criteriaId || ''] === rating ? 'active' : ''}`}
-                    onClick={() => handleRatingChange(question.id, rating, 'interest')}
-                  >
-                    {rating}
-                  </button>
-                ))}
+              <div className="rating-confidence-group">
+                <div className="rating-scale">
+                  {[1, 2, 3, 4, 5].map(rating => (
+                    <button
+                      key={rating}
+                      type="button"
+                      className={`rating-button ${interestRatings[question.criteriaId || ''] === rating ? 'active' : ''}`}
+                      onClick={() => handleRatingChange(question.id, rating, 'interest')}
+                    >
+                      {rating}
+                    </button>
+                  ))}
+                </div>
+                <select
+                  value={interestConfidence[question.criteriaId || ''] || 0.8}
+                  onChange={(e) => handleConfidenceChange(question.id, parseFloat(e.target.value), 'interest')}
+                  className="confidence-select-small"
+                >
+                  <option value={1.0}>Sangat Yakin (100%)</option>
+                  <option value={0.8}>Yakin (80%)</option>
+                  <option value={0.6}>Cukup Yakin (60%)</option>
+                  <option value={0.4}>Tidak Yakin (40%)</option>
+                  <option value={0.2}>Sangat Tidak Yakin (20%)</option>
+                </select>
               </div>
             </div>
           ))}
@@ -140,22 +211,35 @@ const Questionnaire: React.FC<Props> = ({ questions, onSubmit }) => {
 
       <div className="subsection">
         <h3 className="subsection-title">Keterampilan Teknis</h3>
-        <p className="section-description">Beri rating 1-5 tingkat kemampuan Anda:</p>
+        <p className="section-description">Beri rating 1-5 tingkat kemampuan dan keyakinan Anda:</p>
         <div className="rating-group">
           {skillQuestions.map(question => (
-            <div key={question.id} className="rating-item">
+            <div key={question.id} className="rating-item-cf">
               <label className="rating-label">{question.text}</label>
-              <div className="rating-scale">
-                {[1, 2, 3, 4, 5].map(rating => (
-                  <button
-                    key={rating}
-                    type="button"
-                    className={`rating-button ${skillRatings[question.criteriaId || ''] === rating ? 'active' : ''}`}
-                    onClick={() => handleRatingChange(question.id, rating, 'skill')}
-                  >
-                    {rating}
-                  </button>
-                ))}
+              <div className="rating-confidence-group">
+                <div className="rating-scale">
+                  {[1, 2, 3, 4, 5].map(rating => (
+                    <button
+                      key={rating}
+                      type="button"
+                      className={`rating-button ${skillRatings[question.criteriaId || ''] === rating ? 'active' : ''}`}
+                      onClick={() => handleRatingChange(question.id, rating, 'skill')}
+                    >
+                      {rating}
+                    </button>
+                  ))}
+                </div>
+                <select
+                  value={skillConfidence[question.criteriaId || ''] || 0.8}
+                  onChange={(e) => handleConfidenceChange(question.id, parseFloat(e.target.value), 'skill')}
+                  className="confidence-select-small"
+                >
+                  <option value={1.0}>Sangat Yakin (100%)</option>
+                  <option value={0.8}>Yakin (80%)</option>
+                  <option value={0.6}>Cukup Yakin (60%)</option>
+                  <option value={0.4}>Tidak Yakin (40%)</option>
+                  <option value={0.2}>Sangat Tidak Yakin (20%)</option>
+                </select>
               </div>
             </div>
           ))}
